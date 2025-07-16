@@ -1,12 +1,5 @@
 export type Project = {
-  image: React.FunctionComponent<
-    React.SVGProps<SVGSVGElement> & {
-      title?: string;
-      titleId?: string;
-      desc?: string;
-      descId?: string;
-    }
-  >;
+  image: string;
   altText: string;
   title: string;
   description: string;
