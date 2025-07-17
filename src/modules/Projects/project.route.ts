@@ -1,6 +1,6 @@
-import { Router } from "express";
-import { getProjects } from "./project.controller";
+import { Router } from 'express';
+import { getProjects } from './project.controller';
 
-const projectRoute = Router()
+const projectRoute = Router();
 projectRoute.get('/', getProjects);
 export default projectRoute;

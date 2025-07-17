@@ -14,7 +14,7 @@ export async function getUsers() {
 
 const projects: Project[] = [
   {
-    image: "spring-boot.svg",
+    image: 'spring-boot.svg',
     altText: 'spring boot',
     title: 'spring boot',
     description:
@@ -23,7 +23,7 @@ const projects: Project[] = [
     moreVersion: '+ 9 versions',
   },
   {
-    image: "spring-framework.svg",
+    image: 'spring-framework.svg',
     altText: 'spring framework',
     title: 'spring framework',
     description:
@@ -32,7 +32,7 @@ const projects: Project[] = [
     moreVersion: '+ 8 versions',
   },
   {
-    image: "spring-data.svg",
+    image: 'spring-data.svg',
     altText: 'spring data',
     title: 'spring data',
     description:
@@ -41,7 +41,7 @@ const projects: Project[] = [
     moreVersion: '+ 6 versions',
   },
   {
-    image: "spring-cloud.svg",
+    image: 'spring-cloud.svg',
     altText: 'spring cloud',
     title: 'spring cloud',
     description:
@@ -50,7 +50,7 @@ const projects: Project[] = [
     moreVersion: '+ 9 versions',
   },
   {
-    image: "spring-data-flow.svg",
+    image: 'spring-data-flow.svg',
     altText: 'spring cloud data flow',
     title: 'spring cloud data flow',
     description:
@@ -59,7 +59,7 @@ const projects: Project[] = [
     moreVersion: '+ 7 versions',
   },
   {
-    image: "spring-security.svg",
+    image: 'spring-security.svg',
     altText: 'spring security',
     title: 'spring security',
     description:
@@ -71,4 +71,4 @@ const projects: Project[] = [
 
 export const getProjects = async () => {
   return projects;
-}
+};

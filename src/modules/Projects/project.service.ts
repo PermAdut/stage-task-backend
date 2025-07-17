@@ -1,8 +1,13 @@
 import { AppError } from '../../middlewares/handleError';
 import { getProjects } from '../../utils/database';
-import { ProjectResponse, ProjectResponseElement } from './dto/projectResponse.dto';
+import {
+  ProjectResponse,
+  ProjectResponseElement,
+} from './dto/projectResponse.dto';
 import { Project } from './project';
-import fs from 'fs/promises'
+import { transform } from '@svgr/core';
+import fs from 'fs/promises';
+import * as Babel from '@babel/core';
 import path from 'path';
 export async function filterProjects(
   searchTerm: string,
@@ -19,11 +24,21 @@ export async function filterProjects(
 
 async function fillSvgContent(projects: Project[]): Promise<ProjectResponse> {
   try {
-    return Promise.all(projects.map(async (project):Promise<ProjectResponseElement> => {
-        const filePath = path.join(__dirname, '..', '..', 'assets', 'images', 'icons', project.image);
-        const svgContent = await fs.readFile(filePath,'utf-8');
-        return {...project, svgContent: svgContent}; 
-    }));
+    return Promise.all(
+      projects.map(async (project): Promise<ProjectResponseElement> => {
+        const filePath = path.join(
+          __dirname,
+          '..',
+          '..',
+          'assets',
+          'images',
+          'icons',
+          project.image,
+        );
+        const svgContent = await fs.readFile(filePath, 'utf-8');
+        return { ...project, image: svgContent };
+      }),
+    );
   } catch (err) {
     throw new AppError(500, 'Iternal server error');
   }

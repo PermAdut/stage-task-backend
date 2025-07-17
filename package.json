@@ -14,8 +14,15 @@
     "express": "^5.1.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.28.0",
+    "@babel/preset-react": "^7.27.1",
+    "@svgr/core": "^8.1.0",
+    "@svgr/plugin-jsx": "^8.1.0",
+    "@types/babel__core": "^7.20.5",
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/node": "^24.0.13",
+    "cors": "^2.8.5",
     "dotenv": "^17.2.0",
     "eslint": "^9.31.0",
     "nodemon": "^3.1.10",
