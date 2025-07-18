@@ -16,7 +16,7 @@ export async function authUser(user: User): Promise<UserResponseDto> {
     if (err instanceof AppError) {
       throw new AppError(
         err.status || 500,
-        err.message || 'Internal Server Error',
+        err.message || 'Internal Server Error'
       );
     } else throw new AppError(500, 'Internal Server Error');
   }

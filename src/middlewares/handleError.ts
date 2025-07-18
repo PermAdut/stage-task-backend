@@ -10,9 +10,10 @@ export class AppError extends Error {
 
 export const errorHandler = (
   err: AppError,
-  req: Request,
+  _req: Request,
   res: Response,
-  next: NextFunction,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  next: NextFunction
 ) => {
   res.status(err.status || 500).json({
     error: err.message || 'Internal Server Error',

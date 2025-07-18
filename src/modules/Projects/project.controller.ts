@@ -5,7 +5,7 @@ import { ProjectResponse } from './dto/projectResponse.dto';
 export async function getProjects(
   req: Request,
   res: Response,
-  next: NextFunction,
+  next: NextFunction
 ) {
   try {
     const searchString = req.query.search as string;

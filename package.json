@@ -8,7 +8,7 @@
     "build": "tsc",
     "dev": "nodemon --watch src/**/*.ts --exec ts-node src/index.ts",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "format": "prettier --write src/**/*.ts",
+    "prettier": "prettier --write src/**/*.ts",
     "test": "jest --watchAll"
   },
   "dependencies": {
@@ -28,6 +28,7 @@
     "cors": "^2.8.5",
     "dotenv": "^17.2.0",
     "eslint": "^9.31.0",
+    "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-prettier": "^5.5.1",
     "jest": "^30.0.4",
     "nodemon": "^3.1.10",
