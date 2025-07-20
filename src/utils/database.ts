@@ -1,5 +1,5 @@
 import { Project } from '../modules/Projects/project';
-import { User } from '../modules/User/user';
+import { User } from '../modules/Auth/user';
 
 const users: User[] = [
   {

@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import { UserRequestDto } from '../../src/modules/User/dto/userRequest.dto';
+import { UserRequestDto } from '../modules/Auth/dto/auth.request.dto';
 
-export function validateUserRequest(
+export function validateAuthRequest(
   req: Request,
   res: Response,
   next: NextFunction

@@ -3,7 +3,7 @@ import { getProjects } from '../../utils/database';
 import {
   ProjectResponse,
   ProjectResponseElement,
-} from './dto/projectResponse.dto';
+} from './dto/project.response.dto';
 import { Project } from './project';
 import fs from 'fs/promises';
 import path from 'path';

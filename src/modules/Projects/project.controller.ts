@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { filterProjects } from './project.service';
-import { ProjectResponse } from './dto/projectResponse.dto';
+import { ProjectResponse } from './dto/project.response.dto';
 
 export async function getProjects(
   req: Request,
