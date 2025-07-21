@@ -10,7 +10,7 @@ import swaggerUi from 'swagger-ui-express';
 const corsOptions = {
   origin: 'http://localhost:3222',
   methods: 'GET,POST,PUT,DELETE',
-  allowedHeaders: 'Content-Type,Authorization',
+  allowedHeaders: 'Content-Type,Authorization,Bearer',
 };
 
 const app = express();
