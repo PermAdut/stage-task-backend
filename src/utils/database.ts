@@ -1,16 +1,6 @@
 import { Project } from '../modules/Projects/project';
-import { User } from '../modules/Auth/user';
-
-const users: User[] = [
-  {
-    userName: 'admin',
-    password: '1234',
-  },
-];
-
-export async function getUsers() {
-  return users;
-}
+import config from '../configs/config';
+import { Pool } from 'pg';
 
 const projects: Project[] = [
   {
@@ -72,3 +62,12 @@ const projects: Project[] = [
 export const getProjects = async () => {
   return projects;
 };
+
+
+export const pool = new Pool({
+  user: config.postgres.pgUser,
+  password: config.postgres.pgPassword,
+  database: config.postgres.pgDataBase,
+  host: config.postgres.pgHost,
+  port: config.postgres.pgPort,
+});

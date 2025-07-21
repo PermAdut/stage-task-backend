@@ -1,6 +1,14 @@
 import { NextFunction, Request, Response } from 'express';
-import { authUser, generateNewAccessToken } from './auth.service';
-import { RefreshTokenRequestDto, UserRequestDto } from './dto/auth.request.dto';
+import {
+  authUser,
+  generateNewAccessToken,
+  registerNewUser,
+} from './auth.service';
+import {
+  RefreshTokenRequestDto,
+  RegisterRequestDto,
+  UserRequestDto,
+} from './dto/auth.request.dto';
 
 export async function loginUser(
   req: Request,
@@ -15,11 +23,30 @@ export async function loginUser(
   }
 }
 
-export async function refreshToken(req:Request, res:Response, next:NextFunction){
-  try{
-    const accessToken = await generateNewAccessToken((req.body as RefreshTokenRequestDto).refreshToken);
-    res.status(200).json(accessToken)
-  } catch(err){
+export async function registerUser(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const createdUser = await registerNewUser(req.body as RegisterRequestDto);
+    res.status(201).json(createdUser);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function refreshToken(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const accessToken = await generateNewAccessToken(
+      (req.body as RefreshTokenRequestDto).refreshToken
+    );
+    res.status(200).json(accessToken);
+  } catch (err) {
     next(err);
   }
 }

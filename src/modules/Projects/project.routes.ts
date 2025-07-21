@@ -3,5 +3,5 @@ import { getProjects } from './project.controller';
 import { authenticateJwt } from '../../middlewares/authJWT';
 
 const projectRoute = Router();
-projectRoute.get('/', getProjects, authenticateJwt);
+projectRoute.get('/', authenticateJwt, getProjects);
 export default projectRoute;

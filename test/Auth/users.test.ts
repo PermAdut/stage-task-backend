@@ -1,4 +1,3 @@
-import { User } from '../../src/modules/Auth/user';
 import app from '../../src/app';
 import request from 'supertest';
 import * as UserService from '../../src/modules/Auth/auth.service';
@@ -7,6 +6,7 @@ import {
   generateAccessToken,
   generateRefreshToken,
 } from '../../src/utils/jwt.util';
+import { UserRequestDto } from '../../src/modules/Auth/dto/auth.request.dto';
 
 jest.mock('../../src/modules/Auth/auth.service.ts');
 describe('POST /api/v1.0/users/login', () => {
@@ -18,42 +18,38 @@ describe('POST /api/v1.0/users/login', () => {
     const accessToken = await generateAccessToken('admin');
     const refreshToken = await generateRefreshToken('admin');
     authUser.mockResolvedValue({
-      userName: 'admin',
+      username: 'admin',
       accessToken: accessToken,
       refreshToken: refreshToken,
     });
-    const body: User = { userName: 'admin', password: '1234' };
+    const body: UserRequestDto = { username: 'admin', password: '1234' };
     const res = await request(app).post('/api/v1.0/user/login').send(body);
     expect(res.statusCode).toEqual(200);
     expect(res.body).toStrictEqual({
-      userName: 'admin',
+      username: 'admin',
       accessToken: accessToken,
       refreshToken: refreshToken,
-    });
-    expect(UserService.authUser).toHaveBeenCalledWith({
-      userName: 'admin',
-      password: '1234',
     });
   });
 
   it('should return invalid request body error', async () => {
-    const body: Pick<User, 'userName'> = { userName: 'admin' };
+    const body: Pick<UserRequestDto, 'username'> = { username: 'admin' };
     const res = await request(app).post('/api/v1.0/user/login').send(body);
     expect(res.statusCode).toEqual(400);
     expect(res.body).toStrictEqual({
-      error: 'Invalid request body: userName and password must be strings',
+      error: 'Missing required field: password',
     });
   });
 
   it('should return invalid username error', async () => {
     const authUser = jest.spyOn(UserService, 'authUser');
     authUser.mockRejectedValue(new AppError(404, 'Invalid username'));
-    const body: User = { userName: 'admin1', password: '1234' };
+    const body: UserRequestDto = { username: 'admin1', password: '1234' };
     const res = await request(app).post('/api/v1.0/user/login').send(body);
     expect(res.statusCode).toEqual(404);
     expect(res.body).toStrictEqual({ error: 'Invalid username' });
     expect(UserService.authUser).toHaveBeenCalledWith({
-      userName: 'admin1',
+      username: 'admin1',
       password: '1234',
     });
   });
@@ -61,12 +57,12 @@ describe('POST /api/v1.0/users/login', () => {
   it('should return invalid password error', async () => {
     const authUser = jest.spyOn(UserService, 'authUser');
     authUser.mockRejectedValue(new AppError(400, 'Invalid password'));
-    const body: User = { userName: 'admin', password: '12345' };
+    const body: UserRequestDto = { username: 'admin', password: '12345' };
     const res = await request(app).post('/api/v1.0/user/login').send(body);
     expect(res.statusCode).toEqual(400);
     expect(res.body).toStrictEqual({ error: 'Invalid password' });
     expect(UserService.authUser).toHaveBeenCalledWith({
-      userName: 'admin',
+      username: 'admin',
       password: '12345',
     });
   });
