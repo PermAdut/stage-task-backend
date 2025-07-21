@@ -40,39 +40,62 @@ export function validateRequest<T>(validations: Array<FieldValidation<T>>) {
       const value = typedBody[name];
 
       if (required && !(name in typedBody)) {
-        res.status(400).json({error: `Missing required field: ${name}`});
-        continue;
+        res.status(400).json({ error: `Missing required field: ${name}` });
+        return;
       }
 
       if (!required && !(name in typedBody)) {
-        continue;
+        return;
       }
 
       if (value != null && typeof value !== type) {
-        res.status(400).json({error: `Invalid type for field ${name}: must be ${type}`})
-        continue;
+        res
+          .status(400)
+          .json({ error: `Invalid type for field ${name}: must be ${type}` });
+        return;
       }
 
       if (type === 'string' && typeof value === 'string') {
         if (minLength && value.length < minLength) {
-          res.status(400).json({error: `Field ${name} must be at least ${minLength} characters`})
+          res
+            .status(400)
+            .json({
+              error: `Field ${name} must be at least ${minLength} characters`,
+            });
+          return;
         }
         if (maxLength && value.length > maxLength) {
-          res.status(400).json({error: `Field ${name} must be at most ${maxLength} characters`})
+          res
+            .status(400)
+            .json({
+              error: `Field ${name} must be at most ${maxLength} characters`,
+            });
+          return;
         }
       }
 
       if (type === 'number' && typeof value === 'number') {
         if (min != null && value < min) {
-          res.status(400).json({error: `Field ${name} must be at least ${min}`})
+          res
+            .status(400)
+            .json({ error: `Field ${name} must be at least ${min}` });
+          return;
         }
         if (max != null && value > max) {
-          res.status(400).json({error: `Field ${name} must be at most ${max}`})
+          res
+            .status(400)
+            .json({ error: `Field ${name} must be at most ${max}` });
+          return;
         }
       }
 
       if (customValidator && value != null && !customValidator(value).result) {
-        res.status(400).json({error: `Field ${name} failed with ${customValidator(value).error} error`})
+        res
+          .status(400)
+          .json({
+            error: `Field ${name} failed with ${customValidator(value).error} error`,
+          });
+        return;
       }
     }
 
