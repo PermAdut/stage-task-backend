@@ -38,7 +38,6 @@ export function validateRequest<T>(validations: Array<FieldValidation<T>>) {
       customValidator,
     } of validations) {
       const value = typedBody[name];
-
       if (required && !(name in typedBody)) {
         res.status(400).json({ error: `Missing required field: ${name}` });
         return;
@@ -48,7 +47,7 @@ export function validateRequest<T>(validations: Array<FieldValidation<T>>) {
         return;
       }
 
-      if (value != null && typeof value !== type) {
+      if (typeof value !== type) {
         res
           .status(400)
           .json({ error: `Invalid type for field ${name}: must be ${type}` });
@@ -93,7 +92,7 @@ export function validateRequest<T>(validations: Array<FieldValidation<T>>) {
         res
           .status(400)
           .json({
-            error: `Field ${name} failed with ${customValidator(value).error} error`,
+            error: `Field ${name} failed with ${customValidator(value).error}`,
           });
         return;
       }

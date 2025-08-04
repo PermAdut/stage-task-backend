@@ -8,7 +8,6 @@ import {
 } from './dto/auth.request.dto';
 const authRouter = Router();
 
-
 authRouter.post(
   '/login',
   validateRequest<UserRequestDto>([
@@ -29,6 +28,9 @@ authRouter.post(
   '/register',
   validateRequest<RegisterRequestDto>([
     { name: 'username', type: 'string', minLength: 3, required: true },
+    { name: 'firstName', type: 'string', minLength: 3, required: true },
+    { name: 'lastName', type: 'string', minLength: 3, required: true },
+    { name: 'age', type: 'number', min: 1, required: true },
     {
       name: 'password',
       type: 'string',
@@ -65,9 +67,6 @@ authRouter.post(
         };
       },
     },
-    { name: 'firstName', type: 'string', minLength: 3, required: true },
-    { name: 'lastName', type: 'string', minLength: 3, required: true },
-    { name: 'age', type: 'number', min: 1, required: true },
   ]),
   registerUser
 );
