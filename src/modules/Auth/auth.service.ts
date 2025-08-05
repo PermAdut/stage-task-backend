@@ -88,9 +88,12 @@ export async function registerNewUser(
 }
 
 export async function generateNewAccessToken(
-  token: string
+  token: string | undefined
 ): Promise<RefreshTokenResponseDto> {
   try {
+    if (!token) {
+      throw new AppError(401, 'No refresh token provided');
+    }
     const payload = await verifyRefreshToken(token);
     const userQuery: QueryResult<User> = await pool.query(
       `SELECT username FROM "Users" WHERE username = $1`,

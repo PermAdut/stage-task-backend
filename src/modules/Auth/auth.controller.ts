@@ -4,11 +4,7 @@ import {
   generateNewAccessToken,
   registerNewUser,
 } from './auth.service';
-import {
-  RefreshTokenRequestDto,
-  RegisterRequestDto,
-  UserRequestDto,
-} from './dto/auth.request.dto';
+import { RegisterRequestDto, UserRequestDto } from './dto/auth.request.dto';
 
 export async function loginUser(
   req: Request,
@@ -17,6 +13,10 @@ export async function loginUser(
 ) {
   try {
     const userBody = await authUser(req.body as UserRequestDto);
+    res.cookie('refreshToken', userBody.refreshToken, {
+      httpOnly: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
     res.status(200).json(userBody);
   } catch (err) {
     next(err);
@@ -42,9 +42,8 @@ export async function refreshToken(
   next: NextFunction
 ) {
   try {
-    const accessToken = await generateNewAccessToken(
-      (req.body as RefreshTokenRequestDto).refreshToken
-    );
+    const refreshToken = req.cookies?.refreshToken as string | undefined;
+    const accessToken = await generateNewAccessToken(refreshToken);
     res.status(200).json(accessToken);
   } catch (err) {
     next(err);

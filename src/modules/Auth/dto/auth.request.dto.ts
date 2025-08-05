@@ -3,10 +3,6 @@ export interface UserRequestDto {
   password: string;
 }
 
-export interface RefreshTokenRequestDto {
-  refreshToken: string;
-}
-
 export interface RegisterRequestDto {
   username: string;
   password: string;

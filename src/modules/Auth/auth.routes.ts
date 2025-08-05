@@ -1,11 +1,8 @@
 import { Router } from 'express';
 import { loginUser, refreshToken, registerUser } from './auth.controller';
 import { validateRequest } from '../../middlewares/validateRequestDto';
-import {
-  RefreshTokenRequestDto,
-  RegisterRequestDto,
-  UserRequestDto,
-} from './dto/auth.request.dto';
+import { RegisterRequestDto, UserRequestDto } from './dto/auth.request.dto';
+import { parseCookie } from '../../middlewares/parseCookie';
 const authRouter = Router();
 
 authRouter.post(
@@ -18,9 +15,7 @@ authRouter.post(
 );
 authRouter.post(
   '/refresh',
-  validateRequest<RefreshTokenRequestDto>([
-    { name: 'refreshToken', type: 'string', required: true },
-  ]),
+  parseCookie,
   refreshToken
 );
 
