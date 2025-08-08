@@ -1,4 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
+import { HttpStatusCode } from '../utils/statusCodes';
+import { ErrorMessages } from '../utils/errorMessages';
 
 export function parseCookie(
   req: Request,
@@ -7,8 +9,8 @@ export function parseCookie(
 ): void {
   const cookieHeader: string | undefined = req.headers.cookie;
   if (!cookieHeader) {
-    res.status(401).json({
-      error: `No cookie provided`,
+    res.status(HttpStatusCode.UNAUTHORIZED).json({
+      error: ErrorMessages.NO_COOKIE,
     });
     return;
   }

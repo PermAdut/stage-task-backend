@@ -1,4 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
+import { HttpStatusCode } from '../utils/statusCodes';
+import { ErrorMessages } from '../utils/errorMessages';
 
 interface FieldValidation<T> {
   name: keyof T & string;
@@ -17,12 +19,12 @@ interface customValidatorResult {
 }
 
 export function validateRequest<T>(validations: Array<FieldValidation<T>>) {
-  return (req: Request, res: Response, next: NextFunction): void => {
-    const body = req.body as unknown;
+  return (req: Request<object, any, T, any>, res: Response, next: NextFunction): void => {
+    const body = req.body;
     if (!body || typeof body !== 'object') {
       res
-        .status(400)
-        .json({ error: 'Invalid request body: body must be an object' });
+        .status(HttpStatusCode.BAD_REQUEST)
+        .json({ error: ErrorMessages.INVALID_REQUEST_BODY_MUST_BE_AN_OBJECT });
     }
 
     const typedBody = body as Record<string, unknown>;
@@ -39,7 +41,7 @@ export function validateRequest<T>(validations: Array<FieldValidation<T>>) {
     } of validations) {
       const value = typedBody[name];
       if (required && !(name in typedBody)) {
-        res.status(400).json({ error: `Missing required field: ${name}` });
+        res.status(HttpStatusCode.BAD_REQUEST).json({ error: `Missing required field: ${name}` });
         return;
       }
 
@@ -49,7 +51,7 @@ export function validateRequest<T>(validations: Array<FieldValidation<T>>) {
 
       if (typeof value !== type) {
         res
-          .status(400)
+          .status(HttpStatusCode.BAD_REQUEST)
           .json({ error: `Invalid type for field ${name}: must be ${type}` });
         return;
       }
@@ -57,7 +59,7 @@ export function validateRequest<T>(validations: Array<FieldValidation<T>>) {
       if (type === 'string' && typeof value === 'string') {
         if (minLength && value.length < minLength) {
           res
-            .status(400)
+            .status(HttpStatusCode.BAD_REQUEST)
             .json({
               error: `Field ${name} must be at least ${minLength} characters`,
             });
@@ -65,7 +67,7 @@ export function validateRequest<T>(validations: Array<FieldValidation<T>>) {
         }
         if (maxLength && value.length > maxLength) {
           res
-            .status(400)
+            .status(HttpStatusCode.BAD_REQUEST)
             .json({
               error: `Field ${name} must be at most ${maxLength} characters`,
             });
@@ -76,13 +78,13 @@ export function validateRequest<T>(validations: Array<FieldValidation<T>>) {
       if (type === 'number' && typeof value === 'number') {
         if (min != null && value < min) {
           res
-            .status(400)
+            .status(HttpStatusCode.BAD_REQUEST)
             .json({ error: `Field ${name} must be at least ${min}` });
           return;
         }
         if (max != null && value > max) {
           res
-            .status(400)
+            .status(HttpStatusCode.BAD_REQUEST)
             .json({ error: `Field ${name} must be at most ${max}` });
           return;
         }
@@ -90,15 +92,13 @@ export function validateRequest<T>(validations: Array<FieldValidation<T>>) {
 
       if (customValidator && value != null && !customValidator(value).result) {
         res
-          .status(400)
+          .status(HttpStatusCode.BAD_REQUEST)
           .json({
             error: `Field ${name} failed with ${customValidator(value).error}`,
           });
         return;
       }
     }
-
-    req.body = typedBody as T;
     next();
   };
 }

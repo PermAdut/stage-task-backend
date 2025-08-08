@@ -15,6 +15,8 @@ import { QueryResult } from 'pg';
 import { RegisterRequestDto, UserRequestDto } from './dto/auth.request.dto';
 import bcrypt from 'bcrypt';
 import config from '../../configs/config';
+import { HttpStatusCode } from '../../utils/statusCodes';
+import { ErrorMessages } from '../../utils/errorMessages';
 
 export async function authUser(user: UserRequestDto): Promise<UserResponseDto> {
   try {
@@ -23,9 +25,9 @@ export async function authUser(user: UserRequestDto): Promise<UserResponseDto> {
       [user.username]
     );
     const findUser:User = userQuery.rows[0];
-    if (!findUser) throw new AppError(404, 'Invalid username');
+    if (!findUser) throw new AppError(HttpStatusCode.NOT_FOUND, ErrorMessages.INVALID_USERNAME);
     if (!(await bcrypt.compare(user.password, findUser.passwordHash)))
-      throw new AppError(400, 'Invalid password');
+      throw new AppError(HttpStatusCode.BAD_REQUEST, ErrorMessages.INVALID_PASSWORD);
     const accessToken = await generateAccessToken(findUser.username);
     const refreshToken = await generateRefreshToken(findUser.username);
     return {
@@ -37,10 +39,10 @@ export async function authUser(user: UserRequestDto): Promise<UserResponseDto> {
     console.error(err);
     if (err instanceof AppError) {
       throw new AppError(
-        err.status || 500,
-        err.message || 'Internal Server Error'
+        err.status || HttpStatusCode.INTERNAL_SERVER_ERROR,
+        err.message || ErrorMessages.INTERNAL_SERVER_ERROR
       );
-    } else throw new AppError(500, 'Internal Server Error');
+    } else throw new AppError(HttpStatusCode.INTERNAL_SERVER_ERROR, ErrorMessages.INTERNAL_SERVER_ERROR);
   }
 }
 
@@ -50,8 +52,8 @@ export async function registerNewUser(
   try {
     if (credentials.password !== credentials.repeatPassword) {
       throw new AppError(
-        400,
-        'Password and repeated password must be the same'
+        HttpStatusCode.BAD_REQUEST,
+        ErrorMessages.PASSWORDS_MUST_BE_THE_SAME
       );
     }
     const checkQuery: QueryResult<User> = await pool.query(
@@ -60,8 +62,8 @@ export async function registerNewUser(
     ); 
     if(checkQuery.rows[0]){
       throw new AppError(
-        400,
-        'User with this username is already exist'
+        HttpStatusCode.BAD_REQUEST,
+        ErrorMessages.USER_WITH_THIS_USERNAME_ALREADY_EXIST
       );
     }
     const hash = await bcrypt.hash(credentials.password, config.salt);
@@ -80,10 +82,10 @@ export async function registerNewUser(
     console.error(err);
     if (err instanceof AppError) {
       throw new AppError(
-        err.status || 500,
-        err.message || 'Internal Server Error'
+        err.status || HttpStatusCode.INTERNAL_SERVER_ERROR,
+        err.message || ErrorMessages.INTERNAL_SERVER_ERROR
       );
-    } else throw new AppError(500, 'Internal Server Error');
+    } else throw new AppError(HttpStatusCode.INTERNAL_SERVER_ERROR, ErrorMessages.INTERNAL_SERVER_ERROR);
   }
 }
 
@@ -92,7 +94,7 @@ export async function generateNewAccessToken(
 ): Promise<RefreshTokenResponseDto> {
   try {
     if (!token) {
-      throw new AppError(401, 'No refresh token provided');
+      throw new AppError(HttpStatusCode.UNAUTHORIZED, ErrorMessages.TOKEN_NOT_PROVIDED);
     }
     const payload = await verifyRefreshToken(token);
     const userQuery: QueryResult<User> = await pool.query(
@@ -100,7 +102,7 @@ export async function generateNewAccessToken(
       [payload.username]
     );
     if (!userQuery.rows[0]) {
-      throw new AppError(404, 'User not found');
+      throw new AppError(HttpStatusCode.NOT_FOUND, ErrorMessages.USER_NOT_FOUND);
     }
     const accessToken = await generateAccessToken(payload.username);
     return {
@@ -109,9 +111,9 @@ export async function generateNewAccessToken(
   } catch (err) {
     if (err instanceof AppError) {
       throw new AppError(
-        err.status || 500,
-        err.message || 'Internal Server Error'
+        err.status || HttpStatusCode.INTERNAL_SERVER_ERROR,
+        err.message || ErrorMessages.INTERNAL_SERVER_ERROR
       );
-    } else throw new AppError(500, 'Internal Server Error');
+    } else throw new AppError(HttpStatusCode.INTERNAL_SERVER_ERROR, ErrorMessages.INTERNAL_SERVER_ERROR);
   }
 }

@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { HttpStatusCode } from '../utils/statusCodes';
 
 interface QueryValidator<T>{
     name: keyof T & string;
@@ -17,7 +18,7 @@ interface customValidatorResult {
 }
 
 export function validateQuery<T>(validations: Array<QueryValidator<T>>) {
-  return (req: Request, res: Response, next: NextFunction): void => {
+  return (req: Request<object, any, any, T>, res: Response, next: NextFunction): void => {
     const query = req.query as Record<string, unknown>;
     for (const {
       name,
@@ -32,7 +33,7 @@ export function validateQuery<T>(validations: Array<QueryValidator<T>>) {
       const value = query[name];
 
       if (required && !(name in query)) {
-        res.status(400).json({error: `Missing required query: ${name}`});
+        res.status(HttpStatusCode.BAD_REQUEST).json({error: `Missing required query: ${name}`});
         return;
       }
 
@@ -41,34 +42,34 @@ export function validateQuery<T>(validations: Array<QueryValidator<T>>) {
       }
 
       if (value != null && typeof value !== type) {
-        res.status(400).json({error: `Invalid type for query ${name}: must be ${type}`})
+        res.status(HttpStatusCode.BAD_REQUEST).json({error: `Invalid type for query ${name}: must be ${type}`})
         return;
       }
 
       if (type === 'string' && typeof value === 'string') {
         if (minLength && value.length < minLength) {
-          res.status(400).json({error: `Query ${name} must be at least ${minLength} characters`});
+          res.status(HttpStatusCode.BAD_REQUEST).json({error: `Query ${name} must be at least ${minLength} characters`});
           return;
         }
         if (maxLength && value.length > maxLength) {
-          res.status(400).json({error: `Query ${name} must be at most ${maxLength} characters`});
+          res.status(HttpStatusCode.BAD_REQUEST).json({error: `Query ${name} must be at most ${maxLength} characters`});
           return;
         }
       }
 
       if (type === 'number' && typeof value === 'number') {
         if (min != null && value < min) {
-          res.status(400).json({error: `Query ${name} must be at least ${min}`});
+          res.status(HttpStatusCode.BAD_REQUEST).json({error: `Query ${name} must be at least ${min}`});
           return;
         }
         if (max != null && value > max) {
-          res.status(400).json({error: `Query ${name} must be at most ${max}`});
+          res.status(HttpStatusCode.BAD_REQUEST).json({error: `Query ${name} must be at most ${max}`});
           return;
         }
       }
 
       if (customValidator && value != null && !customValidator(value).result) {
-        res.status(400).json({error: `Query ${name} failed with ${customValidator(value).error} error`})
+        res.status(HttpStatusCode.BAD_REQUEST).json({error: `Query ${name} failed with ${customValidator(value).error} error`})
         return;
       }
     }

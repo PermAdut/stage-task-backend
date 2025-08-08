@@ -1,6 +1,8 @@
 import jwt from 'jsonwebtoken';
 import config from '../configs/config';
 import { AppError } from '../middlewares/handleError';
+import { HttpStatusCode } from './statusCodes';
+import { ErrorMessages } from './errorMessages';
 
 interface JWTPayload {
   username: string;
@@ -29,7 +31,7 @@ export async function verifyAccessToken(token: string): Promise<JWTPayload> {
     const decoded = jwt.verify(token, config.jwtPrivateAccessKey) as JWTPayload;
     return decoded;
   } catch {
-    throw new AppError(401, 'Invalid or expired access token');
+    throw new AppError(HttpStatusCode.UNAUTHORIZED, ErrorMessages.INVALID_OR_EXPIRED_ACCESS_TOKEN);
   }
 }
 
@@ -38,6 +40,6 @@ export async function verifyRefreshToken(token: string): Promise<JWTPayload> {
     const decoded = jwt.verify(token, config.jwtPrivateRefreshKey) as JWTPayload;
     return decoded;
   } catch {
-    throw new AppError(401, 'Invalid or expired refresh token');
+    throw new AppError(HttpStatusCode.UNAUTHORIZED, ErrorMessages.INVALID_OR_EXPIRED_REFRESH_TOKEN);
   }
 }
