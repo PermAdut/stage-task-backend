@@ -47,6 +47,7 @@ export async function refreshToken(
     const accessToken = await generateNewAccessToken(refreshToken);
     res.status(HttpStatusCode.OK).json(accessToken);
   } catch (err) {
+    console.error(err)
     next(err);
   }
 }

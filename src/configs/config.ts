@@ -17,6 +17,7 @@ interface Config {
   jwtPrivateRefreshKey: string;
   postgres: PostgresCredentials;
   salt:number,
+  origins: string,
 }
 
 const config: Config = {
@@ -32,5 +33,6 @@ const config: Config = {
     pgPort: Number(process.env.PG_PORT) || 5432,
     pgDataBase: process.env.PG_DATABASE || 'Spring',
   },
+  origins: process.env.ORIGIN_CORS || '127.0.0.1',
 };
 export default config;

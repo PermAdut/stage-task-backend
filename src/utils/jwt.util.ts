@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import config from '../configs/config';
-import { AppError } from '../middlewares/handleError';
+import { AppError } from '../middlewares/error.middleware';
 import { HttpStatusCode } from './statusCodes';
 import { ErrorMessages } from './errorMessages';
 

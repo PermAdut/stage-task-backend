@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { getProjects } from './project.controller';
-import { authenticateJwt } from '../../middlewares/authJWT';
+import { authenticateJwt } from '../../middlewares/auth.middleware';
 import { validateQuery } from '../../middlewares/validateQueryParams';
 
 const projectRoute = Router();

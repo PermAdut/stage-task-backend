@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { AppError } from './handleError';
+import { AppError } from './error.middleware';
 import { verifyAccessToken } from '../utils/jwt.util';
 import { pool } from '../utils/database';
 import { QueryResult } from 'pg';

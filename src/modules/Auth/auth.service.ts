@@ -1,6 +1,6 @@
 import { IUser } from './user';
 import { pool } from '../../utils/database';
-import { AppError } from '../../middlewares/handleError';
+import { AppError } from '../../middlewares/error.middleware';
 import {
   RefreshTokenResponseDto,
   RegisterResponseDto,
