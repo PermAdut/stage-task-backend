@@ -12,7 +12,6 @@ export async function generateAccessToken(username: string): Promise<string> {
   const payload: JWTPayload = { username };
   const accessToken = jwt.sign(payload, config.jwtPrivateAccessKey, {
     expiresIn: '1d',
-    algorithm: 'HS256',
   });
   return accessToken;
 }
@@ -21,7 +20,6 @@ export async function generateRefreshToken(username: string): Promise<string> {
   const payload: JWTPayload = { username };
   const refreshToken = jwt.sign(payload, config.jwtPrivateRefreshKey, {
     expiresIn: '7d',
-    algorithm: 'HS256',
   });
   return refreshToken;
 }
