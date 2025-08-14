@@ -1,10 +1,5 @@
+import { IProject } from '../project';
+
 export type ProjectResponse = ProjectResponseElement[];
 
-export type ProjectResponseElement = {
-  image: string;
-  altText: string;
-  title: string;
-  description: string;
-  version: string;
-  moreVersion: string;
-};
+export type ProjectResponseElement = Omit<IProject, 'id'>

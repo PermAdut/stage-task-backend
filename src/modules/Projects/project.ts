@@ -1,4 +1,5 @@
-export type Project = {
+export interface IProject {
+  id: number;
   image: string;
   altText: string;
   title: string;
