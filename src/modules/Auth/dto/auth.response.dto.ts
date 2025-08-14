@@ -9,7 +9,7 @@ export interface RefreshTokenResponseDto {
   accessToken: string;
 }
 
-export interface RegisterResponseDto extends Omit<IUser, 'id' | 'passwordHash'>{
+export interface RegisterResponseDto extends Pick<IUser, 'username'>{
   accessToken: string;
   refreshToken: string;
 }

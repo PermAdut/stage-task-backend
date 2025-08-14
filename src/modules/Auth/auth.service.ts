@@ -35,8 +35,14 @@ export async function authUser(user: UserRequestDto): Promise<UserResponseDto> {
         HttpStatusCode.BAD_REQUEST,
         ErrorMessages.INVALID_PASSWORD
       );
-    const accessToken = await generateAccessToken(findUser.username);
-    const refreshToken = await generateRefreshToken(findUser.username);
+    const accessToken = await generateAccessToken(
+      findUser.username,
+      findUser.id
+    );
+    const refreshToken = await generateRefreshToken(
+      findUser.username,
+      findUser.id
+    );
     return {
       username: findUser.username,
       accessToken: accessToken,
@@ -68,7 +74,7 @@ export async function registerNewUser(
       );
     }
     const checkQuery: QueryResult<IUser> = await pool.query(
-      `SELECT username, "firstName", "lastName", age FROM "Users" WHERE username = $1`,
+      `SELECT id FROM "Users" WHERE username = $1`,
       [credentials.username]
     );
     if (checkQuery.rows[0]) {
@@ -79,7 +85,7 @@ export async function registerNewUser(
     }
     const hash = await bcrypt.hash(credentials.password, config.salt);
     const insertQuery: QueryResult<IUser> = await pool.query(
-      'INSERT INTO "Users" (username, "passwordHash", "firstName", "lastName", "age") VALUES ($1, $2, $3, $4, $5) RETURNING username, "firstName", "lastName", age',
+      'INSERT INTO "Users" (username, "passwordHash", "firstName", "lastName", "age") VALUES ($1, $2, $3, $4, $5) RETURNING id, username, "firstName", "lastName", age',
       [
         credentials.username,
         hash,
@@ -88,9 +94,13 @@ export async function registerNewUser(
         credentials.age,
       ]
     );
-    const accessToken = await generateAccessToken(insertQuery.rows[0].username);
+    const accessToken = await generateAccessToken(
+      insertQuery.rows[0].username,
+      insertQuery.rows[0].id
+    );
     const refreshToken = await generateRefreshToken(
-      insertQuery.rows[0].username
+      insertQuery.rows[0].username,
+      insertQuery.rows[0].id
     );
     return { ...insertQuery.rows[0], accessToken, refreshToken };
   } catch (err) {
@@ -120,7 +130,7 @@ export async function generateNewAccessToken(
     }
     const payload = await verifyRefreshToken(token);
     const userQuery: QueryResult<IUser> = await pool.query(
-      `SELECT username FROM "Users" WHERE username = $1`,
+      `SELECT id FROM "Users" WHERE username = $1`,
       [payload.username]
     );
     if (!userQuery.rows[0]) {
@@ -129,7 +139,7 @@ export async function generateNewAccessToken(
         ErrorMessages.USER_NOT_FOUND
       );
     }
-    const accessToken = await generateAccessToken(payload.username);
+    const accessToken = await generateAccessToken(payload.username, payload.id);
     return {
       accessToken: accessToken,
     };
