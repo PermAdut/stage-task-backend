@@ -24,10 +24,17 @@ export async function authUser(user: UserRequestDto): Promise<UserResponseDto> {
       `SELECT * FROM "Users" WHERE username = $1`,
       [user.username]
     );
-    const findUser:IUser = userQuery.rows[0];
-    if (!findUser) throw new AppError(HttpStatusCode.NOT_FOUND, ErrorMessages.INVALID_USERNAME);
+    const findUser: IUser = userQuery.rows[0];
+    if (!findUser)
+      throw new AppError(
+        HttpStatusCode.NOT_FOUND,
+        ErrorMessages.INVALID_USERNAME
+      );
     if (!(await bcrypt.compare(user.password, findUser.passwordHash)))
-      throw new AppError(HttpStatusCode.BAD_REQUEST, ErrorMessages.INVALID_PASSWORD);
+      throw new AppError(
+        HttpStatusCode.BAD_REQUEST,
+        ErrorMessages.INVALID_PASSWORD
+      );
     const accessToken = await generateAccessToken(findUser.username);
     const refreshToken = await generateRefreshToken(findUser.username);
     return {
@@ -42,7 +49,11 @@ export async function authUser(user: UserRequestDto): Promise<UserResponseDto> {
         err.status || HttpStatusCode.INTERNAL_SERVER_ERROR,
         err.message || ErrorMessages.INTERNAL_SERVER_ERROR
       );
-    } else throw new AppError(HttpStatusCode.INTERNAL_SERVER_ERROR, ErrorMessages.INTERNAL_SERVER_ERROR);
+    } else
+      throw new AppError(
+        HttpStatusCode.INTERNAL_SERVER_ERROR,
+        ErrorMessages.INTERNAL_SERVER_ERROR
+      );
   }
 }
 
@@ -59,15 +70,15 @@ export async function registerNewUser(
     const checkQuery: QueryResult<IUser> = await pool.query(
       `SELECT username, "firstName", "lastName", age FROM "Users" WHERE username = $1`,
       [credentials.username]
-    ); 
-    if(checkQuery.rows[0]){
+    );
+    if (checkQuery.rows[0]) {
       throw new AppError(
         HttpStatusCode.BAD_REQUEST,
         ErrorMessages.USER_WITH_THIS_USERNAME_ALREADY_EXIST
       );
     }
     const hash = await bcrypt.hash(credentials.password, config.salt);
-    const insertQuery:QueryResult<IUser> = await pool.query(
+    const insertQuery: QueryResult<IUser> = await pool.query(
       'INSERT INTO "Users" (username, "passwordHash", "firstName", "lastName", "age") VALUES ($1, $2, $3, $4, $5) RETURNING username, "firstName", "lastName", age',
       [
         credentials.username,
@@ -77,7 +88,11 @@ export async function registerNewUser(
         credentials.age,
       ]
     );
-    return insertQuery.rows[0];
+    const accessToken = await generateAccessToken(insertQuery.rows[0].username);
+    const refreshToken = await generateRefreshToken(
+      insertQuery.rows[0].username
+    );
+    return { ...insertQuery.rows[0], accessToken, refreshToken };
   } catch (err) {
     console.error(err);
     if (err instanceof AppError) {
@@ -85,7 +100,11 @@ export async function registerNewUser(
         err.status || HttpStatusCode.INTERNAL_SERVER_ERROR,
         err.message || ErrorMessages.INTERNAL_SERVER_ERROR
       );
-    } else throw new AppError(HttpStatusCode.INTERNAL_SERVER_ERROR, ErrorMessages.INTERNAL_SERVER_ERROR);
+    } else
+      throw new AppError(
+        HttpStatusCode.INTERNAL_SERVER_ERROR,
+        ErrorMessages.INTERNAL_SERVER_ERROR
+      );
   }
 }
 
@@ -94,7 +113,10 @@ export async function generateNewAccessToken(
 ): Promise<RefreshTokenResponseDto> {
   try {
     if (!token) {
-      throw new AppError(HttpStatusCode.UNAUTHORIZED, ErrorMessages.TOKEN_NOT_PROVIDED);
+      throw new AppError(
+        HttpStatusCode.UNAUTHORIZED,
+        ErrorMessages.TOKEN_NOT_PROVIDED
+      );
     }
     const payload = await verifyRefreshToken(token);
     const userQuery: QueryResult<IUser> = await pool.query(
@@ -102,7 +124,10 @@ export async function generateNewAccessToken(
       [payload.username]
     );
     if (!userQuery.rows[0]) {
-      throw new AppError(HttpStatusCode.NOT_FOUND, ErrorMessages.USER_NOT_FOUND);
+      throw new AppError(
+        HttpStatusCode.NOT_FOUND,
+        ErrorMessages.USER_NOT_FOUND
+      );
     }
     const accessToken = await generateAccessToken(payload.username);
     return {
@@ -114,6 +139,10 @@ export async function generateNewAccessToken(
         err.status || HttpStatusCode.INTERNAL_SERVER_ERROR,
         err.message || ErrorMessages.INTERNAL_SERVER_ERROR
       );
-    } else throw new AppError(HttpStatusCode.INTERNAL_SERVER_ERROR, ErrorMessages.INTERNAL_SERVER_ERROR);
+    } else
+      throw new AppError(
+        HttpStatusCode.INTERNAL_SERVER_ERROR,
+        ErrorMessages.INTERNAL_SERVER_ERROR
+      );
   }
 }

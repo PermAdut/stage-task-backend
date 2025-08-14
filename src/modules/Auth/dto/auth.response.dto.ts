@@ -1,5 +1,6 @@
-export interface UserResponseDto {
-  username: string;
+import { IUser } from "../user";
+
+export interface UserResponseDto extends Pick<IUser, 'username'> {
   accessToken: string;
   refreshToken: string;
 }
@@ -8,9 +9,7 @@ export interface RefreshTokenResponseDto {
   accessToken: string;
 }
 
-export interface RegisterResponseDto {
-  username: string;
-  firstName: string;
-  lastName: string;
-  age: number;
+export interface RegisterResponseDto extends Omit<IUser, 'id' | 'passwordHash'>{
+  accessToken: string;
+  refreshToken: string;
 }
