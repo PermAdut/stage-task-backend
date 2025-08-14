@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import { loginUser, refreshToken, registerUser } from './auth.controller';
-import { validateRequest } from '../../middlewares/validateRequestDto';
+import { validateRequest } from '../../helpers/validateRequestHelper.helper';
 import { RegisterRequestDto, UserRequestDto } from './dto/auth.request.dto';
-import { parseCookie } from '../../middlewares/parseCookie';
+import { parseCookie } from '../../helpers/cookieParse.helper';
 const authRouter = Router();
 
 authRouter.post(
@@ -10,7 +10,7 @@ authRouter.post(
   validateRequest<UserRequestDto>([
     { name: 'username', type: 'string', required: true },
     { name: 'password', type: 'string', required: true },
-  ]),
+  ], false),
   loginUser
 );
 authRouter.post(
@@ -62,7 +62,7 @@ authRouter.post(
         };
       },
     },
-  ]),
+  ], false),
   registerUser
 );
 export default authRouter;
