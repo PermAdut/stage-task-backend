@@ -4,6 +4,7 @@ import authRouter from './modules/Auth/auth.routes';
 import projectRoute from './modules/Projects/project.routes';
 import cors from 'cors';
 import config from './configs/config';
+import cookieParser from 'cookie-parser';
 
 const corsOptions = {
   origin: config.origins,
@@ -13,6 +14,7 @@ const corsOptions = {
 };
 
 const app = express();
+app.use(cookieParser());
 app.use(express.json());
 app.use(cors(corsOptions));
 app.use('/api/v1.0/user', authRouter);

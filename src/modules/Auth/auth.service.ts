@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { IUser } from './user';
 import { pool } from '../../utils/database';
 import { AppError } from '../../middlewares/error.middleware';
@@ -48,18 +50,11 @@ export async function authUser(user: UserRequestDto): Promise<UserResponseDto> {
       accessToken: accessToken,
       refreshToken: refreshToken,
     };
-  } catch (err) {
-    console.error(err);
-    if (err instanceof AppError) {
-      throw new AppError(
-        err.status || HttpStatusCode.INTERNAL_SERVER_ERROR,
-        err.message || ErrorMessages.INTERNAL_SERVER_ERROR
-      );
-    } else
-      throw new AppError(
-        HttpStatusCode.INTERNAL_SERVER_ERROR,
-        ErrorMessages.INTERNAL_SERVER_ERROR
-      );
+  } catch (err: any) {
+    throw new AppError(
+      err?.status || HttpStatusCode.INTERNAL_SERVER_ERROR,
+      err?.message || ErrorMessages.INTERNAL_SERVER_ERROR
+    );
   }
 }
 
@@ -103,18 +98,11 @@ export async function registerNewUser(
       insertQuery.rows[0].id
     );
     return { ...insertQuery.rows[0], accessToken, refreshToken };
-  } catch (err) {
-    console.error(err);
-    if (err instanceof AppError) {
-      throw new AppError(
-        err.status || HttpStatusCode.INTERNAL_SERVER_ERROR,
-        err.message || ErrorMessages.INTERNAL_SERVER_ERROR
-      );
-    } else
-      throw new AppError(
-        HttpStatusCode.INTERNAL_SERVER_ERROR,
-        ErrorMessages.INTERNAL_SERVER_ERROR
-      );
+  } catch (err: any) {
+    throw new AppError(
+      err?.status || HttpStatusCode.INTERNAL_SERVER_ERROR,
+      err?.message || ErrorMessages.INTERNAL_SERVER_ERROR
+    );
   }
 }
 
@@ -130,8 +118,8 @@ export async function generateNewAccessToken(
     }
     const payload = await verifyRefreshToken(token);
     const userQuery: QueryResult<IUser> = await pool.query(
-      `SELECT id FROM "Users" WHERE username = $1`,
-      [payload.username]
+      `SELECT id FROM "Users" WHERE id = $1`,
+      [payload.id]
     );
     if (!userQuery.rows[0]) {
       throw new AppError(
@@ -143,16 +131,10 @@ export async function generateNewAccessToken(
     return {
       accessToken: accessToken,
     };
-  } catch (err) {
-    if (err instanceof AppError) {
-      throw new AppError(
-        err.status || HttpStatusCode.INTERNAL_SERVER_ERROR,
-        err.message || ErrorMessages.INTERNAL_SERVER_ERROR
-      );
-    } else
-      throw new AppError(
-        HttpStatusCode.INTERNAL_SERVER_ERROR,
-        ErrorMessages.INTERNAL_SERVER_ERROR
-      );
+  } catch (err: any) {
+    throw new AppError(
+      err?.status || HttpStatusCode.INTERNAL_SERVER_ERROR,
+      err?.message || ErrorMessages.INTERNAL_SERVER_ERROR
+    );
   }
 }

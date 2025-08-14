@@ -2,67 +2,68 @@ import { Router } from 'express';
 import { loginUser, refreshToken, registerUser } from './auth.controller';
 import { validateRequest } from '../../helpers/validateRequestHelper.helper';
 import { RegisterRequestDto, UserRequestDto } from './dto/auth.request.dto';
-import { parseCookie } from '../../helpers/cookieParse.helper';
 const authRouter = Router();
 
 authRouter.post(
   '/login',
-  validateRequest<UserRequestDto>([
-    { name: 'username', type: 'string', required: true },
-    { name: 'password', type: 'string', required: true },
-  ], false),
+  validateRequest<UserRequestDto>(
+    [
+      { name: 'username', type: 'string', required: true },
+      { name: 'password', type: 'string', required: true },
+    ],
+    false
+  ),
   loginUser
 );
-authRouter.post(
-  '/refresh',
-  parseCookie,
-  refreshToken
-);
+authRouter.post('/refresh', refreshToken);
 
 authRouter.post(
   '/register',
-  validateRequest<RegisterRequestDto>([
-    { name: 'username', type: 'string', minLength: 3, required: true },
-    { name: 'firstName', type: 'string', minLength: 3, required: true },
-    { name: 'lastName', type: 'string', minLength: 3, required: true },
-    { name: 'age', type: 'number', min: 1, required: true },
-    {
-      name: 'password',
-      type: 'string',
-      minLength: 4,
-      required: true,
-      customValidator: (value: unknown) => {
-        if (typeof value !== 'string')
+  validateRequest<RegisterRequestDto>(
+    [
+      { name: 'username', type: 'string', minLength: 3, required: true },
+      { name: 'firstName', type: 'string', minLength: 3, required: true },
+      { name: 'lastName', type: 'string', minLength: 3, required: true },
+      { name: 'age', type: 'number', min: 1, required: true },
+      {
+        name: 'password',
+        type: 'string',
+        minLength: 4,
+        required: true,
+        customValidator: (value: unknown) => {
+          if (typeof value !== 'string')
+            return {
+              result: false,
+              error: 'password must be a string',
+            };
+          if (/^(?=.*[a-zA-Z])(?=.*\d)/.test(value)) return { result: true };
           return {
             result: false,
-            error: 'password must be a string',
+            error: 'password must contain at least 1 number and 1 letter.',
           };
-        if (/^(?=.*[a-zA-Z])(?=.*\d)/.test(value)) return { result: true };
-        return {
-          result: false,
-          error: 'password must contain at least 1 number and 1 letter.',
-        };
+        },
       },
-    },
-    {
-      name: 'repeatPassword',
-      type: 'string',
-      required: true,
-      minLength: 4,
-      customValidator: (value: unknown) => {
-        if (typeof value !== 'string')
+      {
+        name: 'repeatPassword',
+        type: 'string',
+        required: true,
+        minLength: 4,
+        customValidator: (value: unknown) => {
+          if (typeof value !== 'string')
+            return {
+              result: false,
+              error: 'password must be a string',
+            };
+          if (/^(?=.*[a-zA-Z])(?=.*\d)/.test(value)) return { result: true };
           return {
             result: false,
-            error: 'password must be a string',
+            error: 'password must contain at least 1 number and 1 letter.',
           };
-        if (/^(?=.*[a-zA-Z])(?=.*\d)/.test(value)) return { result: true };
-        return {
-          result: false,
-          error: 'password must contain at least 1 number and 1 letter.',
-        };
+        },
       },
-    },
-  ], false),
+    ],
+    false
+  ),
   registerUser
 );
 export default authRouter;

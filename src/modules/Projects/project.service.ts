@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { QueryResult } from 'pg';
 import { pool } from '../../utils/database';
 import {
@@ -30,17 +32,10 @@ export async function filterProjects(
       [pattern]
     );
     return projectsQuery.rows;
-  } catch (err) {
-    console.error(err);
-    if (err instanceof AppError) {
-      throw new AppError(
-        err.status || HttpStatusCode.INTERNAL_SERVER_ERROR,
-        err.message || ErrorMessages.INTERNAL_SERVER_ERROR
-      );
-    } else
-      throw new AppError(
-        HttpStatusCode.INTERNAL_SERVER_ERROR,
-        ErrorMessages.INTERNAL_SERVER_ERROR
-      );
+  } catch (err: any) {
+    throw new AppError(
+      err?.status || HttpStatusCode.INTERNAL_SERVER_ERROR,
+      err?.message || ErrorMessages.INTERNAL_SERVER_ERROR
+    );
   }
 }
