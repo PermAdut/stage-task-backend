@@ -1,27 +1,26 @@
 import jwt from 'jsonwebtoken';
 import config from '../configs/config';
-import { AppError } from '../middlewares/handleError';
+import { AppError } from '../middlewares/error.middleware';
 import { HttpStatusCode } from './statusCodes';
 import { ErrorMessages } from './errorMessages';
 
 interface JWTPayload {
   username: string;
+  id:number;
 }
 
-export async function generateAccessToken(username: string): Promise<string> {
-  const payload: JWTPayload = { username };
+export async function generateAccessToken(username: string, id:number): Promise<string> {
+  const payload: JWTPayload = { username, id };
   const accessToken = jwt.sign(payload, config.jwtPrivateAccessKey, {
     expiresIn: '1d',
-    algorithm: 'HS256',
   });
   return accessToken;
 }
 
-export async function generateRefreshToken(username: string): Promise<string> {
-  const payload: JWTPayload = { username };
+export async function generateRefreshToken(username: string, id:number): Promise<string> {
+  const payload: JWTPayload = { username, id };
   const refreshToken = jwt.sign(payload, config.jwtPrivateRefreshKey, {
     expiresIn: '7d',
-    algorithm: 'HS256',
   });
   return refreshToken;
 }

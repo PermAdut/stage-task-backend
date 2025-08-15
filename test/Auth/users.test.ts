@@ -1,7 +1,7 @@
 import app from '../../src/app';
 import request from 'supertest';
 import * as UserService from '../../src/modules/Auth/auth.service';
-import { AppError } from '../../src/middlewares/handleError';
+import { AppError } from '../../src/middlewares/error.middleware';
 import {
   generateAccessToken,
   generateRefreshToken,

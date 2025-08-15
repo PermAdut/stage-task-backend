@@ -31,6 +31,10 @@ export async function registerUser(
 ) {
   try {
     const createdUser = await registerNewUser(req.body);
+    res.cookie('refreshToken', createdUser.refreshToken, {
+      httpOnly: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
     res.status(HttpStatusCode.CREATED).json(createdUser);
   } catch (err) {
     next(err);

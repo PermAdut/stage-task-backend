@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { HttpStatusCode } from '../utils/statusCodes';
 import { ErrorMessages } from '../utils/errorMessages';
 
-interface FieldValidation<T> {
+interface Validation<T> {
   name: keyof T & string;
   type: 'string' | 'number' | 'boolean';
   required?: boolean;
@@ -18,9 +18,9 @@ interface customValidatorResult {
   error?: string;
 }
 
-export function validateRequest<T>(validations: Array<FieldValidation<T>>) {
-  return (req: Request<object, any, T, any>, res: Response, next: NextFunction): void => {
-    const body = req.body;
+export function validateRequest<T>(validations:Array<Validation<T>>, isQuery: boolean){
+    return (req: Request<object, any, T, T>, res: Response, next: NextFunction): void => {
+    const body = isQuery ? req.query: req.body;
     if (!body || typeof body !== 'object') {
       res
         .status(HttpStatusCode.BAD_REQUEST)

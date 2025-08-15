@@ -1,15 +1,15 @@
 import { Router } from 'express';
 import { getProjects } from './project.controller';
-import { authenticateJwt } from '../../middlewares/authJWT';
-import { validateQuery } from '../../middlewares/validateQueryParams';
+import { authenticateJwt } from '../../middlewares/auth.middleware';
+import { validateRequest } from '../../helpers/validateRequestHelper.helper';
 
 const projectRoute = Router();
 projectRoute.get(
   '/',
   authenticateJwt,
-  validateQuery<{search: string}>([
+  validateRequest<{search: string}>([
     { name: 'search', type: 'string', required: true },
-  ]),
+  ], true),
   getProjects
 );
 export default projectRoute;
